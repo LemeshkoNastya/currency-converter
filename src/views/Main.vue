@@ -348,12 +348,21 @@ export default {
   &__comboboxes {
     display: flex;
     align-items: center;
+    margin-top: 20px;
+
+    @include for-size(tablet) {
+      margin-top: 0;
+    }
   }
 
   &__combobox {
     &-code {
       line-height: 20px;
     }
+  }
+
+  .notification {
+    margin-top: 20px;
   }
 }
 </style>

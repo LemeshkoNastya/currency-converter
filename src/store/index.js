@@ -42,11 +42,19 @@ export default new Vuex.Store({
   },
   getters: {
     listSymbols(state) {
-      const list = state.symbols ? Object.entries(state.symbols).map(symbol => symbol[1]) : null;
-      return list;
+      return state.symbols ? Object.values(state.symbols) : null;
+    },
+    listCodeSymbols(state) {
+      return state.symbols ? Object.keys(state.symbols) : null;
     },
     resultConverter(state) {
       return state.result;
+    },
+    symbolFrom(state) {
+      return state.symbolFrom;
+    },
+    symbolTo(state) {
+      return state.symbolTo;
     },
     loading(state) {
       return state.loadingSymbols;
@@ -75,10 +83,11 @@ export default new Vuex.Store({
     },
     changeSymbol({
       commit,
-      state
+      getters
     }, payload) {
-      const currentSymbol = Object.keys(state.symbols).find(key => state.symbols[key] === payload.symbol)
-      if (currentSymbol) {
+      const indexSymbol = getters.listSymbols.findIndex(symbol => symbol === payload.symbol);
+      if (indexSymbol > -1) {
+        const currentSymbol = getters.listCodeSymbols[indexSymbol];
         if (payload.param === 'from') commit("changeSymbolFrom", currentSymbol);
         else commit("changeSymbolTo", currentSymbol);
       }

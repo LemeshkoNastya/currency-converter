@@ -19,5 +19,6 @@ export default {
 
 #app {
   font-family: "Open Sans", sans-serif;
+  background: white;
 }
 </style>

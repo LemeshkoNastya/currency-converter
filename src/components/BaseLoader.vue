@@ -3,7 +3,7 @@
     <v-progress-circular
       size="100"
       indeterminate
-      color="#000000"
+      color="#6d0fca"
       :width="this.$vuetify.breakpoint.width < 960 ? 8 : 15"
     ></v-progress-circular>
   </div>

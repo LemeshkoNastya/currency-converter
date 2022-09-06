@@ -67,6 +67,7 @@ import BaseNotification from "@/components/BaseNotification";
 import BaseInput from "@/components/BaseInput";
 import BaseCombobox from "@/components/BaseCombobox";
 import BaseButtonIcon from "@/components/BaseButtonIcon";
+import listCountryCurrency from "@/data/listCountryCurrency.js";
 
 export default {
   components: {
@@ -81,20 +82,24 @@ export default {
       amountConverter: null,
       selectSymbolFrom: null,
       selectSymbolTo: null,
+      isClickButton: false,
     };
   },
   watch: {
     amountConverter(value) {
       this.changeAmount(value);
-      this.checkConverter();
+      if (!this.isClickButton) this.checkConverter();
     },
     selectSymbolFrom(value) {
       this.changeSymbol({ param: "from", symbol: value });
-      this.checkConverter();
+      if (!this.isClickButton) this.checkConverter();
     },
     selectSymbolTo(value) {
       this.changeSymbol({ param: "to", symbol: value });
-      this.checkConverter();
+      if (!this.isClickButton) this.checkConverter();
+    },
+    listSymbols() {
+      this.defineUserCurrency();
     },
   },
   computed: {
@@ -116,9 +121,49 @@ export default {
     ...mapMutations(["changeAmount"]),
     ...mapActions(["loadSymbols", "changeSymbol", "checkConverter"]),
     changeCurrencies() {
+      this.isClickButton = true;
+
       const copyFrom = this.selectSymbolFrom;
       this.selectSymbolFrom = this.selectSymbolTo;
       this.selectSymbolTo = copyFrom;
+      if (this.resultConverter) this.amountConverter = this.resultConverter;
+
+      this.checkConverter();
+      setTimeout(() => {
+        this.isClickButton = false;
+      }, 100);
+    },
+    defineUserCurrency() {
+      const language = window.navigator
+        ? (
+            window.navigator.language ||
+            window.navigator.systemLanguage ||
+            window.navigator.userLanguage
+          ).toUpperCase()
+        : "US";
+
+      const localeLanguage = language.includes("-")
+        ? language.split("-")[1]
+        : language;
+
+      const localeCurrency = this.defineCurrency(localeLanguage, "USD");
+
+      this.selectSymbolFrom = this.defineSelect(localeCurrency);
+      this.selectSymbolTo = this.defineSelect("EUR");
+      this.amountConverter = 100;
+    },
+    defineCurrency(country, defaultCurrency) {
+      return (
+        listCountryCurrency.find((item) => item.country === country)
+          ?.currency || defaultCurrency
+      );
+    },
+    defineSelect(currency) {
+      const indexCode = this.listCodeSymbols.findIndex(
+        (code) => code === currency
+      );
+
+      return indexCode > -1 ? this.listSymbols[indexCode] : null;
     },
   },
   mounted() {
